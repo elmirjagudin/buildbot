@@ -499,15 +499,12 @@ class GtkClient(TextClient):
     ClientClass = ThreeRowClient
 
     def __init__(self, master, events="steps", username="statusClient", passwd="clientpw"):
-        self.master = master
-        self.username = username
-        self.passwd = passwd
-        self.listener = StatusClient(events)
+        TextClient.__init__(self, master, events, username, passwd)
 
         w = gtk.Window()
         self.w = w
         #w.set_size_request(64,64)
-        w.connect('destroy', lambda win: gtk.main_quit())
+        w.connect('destroy', lambda _: self.disconnect())
         self.vb = gtk.VBox(False, 2)
         self.status = gtk.Label("unconnected")
         self.vb.add(self.status)
