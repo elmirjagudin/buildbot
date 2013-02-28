@@ -66,6 +66,7 @@ class TextClient:
         reactor.connectTCP(host, port, cf)
         d.addCallbacks(self.connected, self.not_connected)
         return d
+
     def connected(self, ref):
         ref.notifyOnDisconnect(self.disconnected)
         self.listener.connected(ref)
@@ -77,6 +78,7 @@ buildbot.status.client.PBListener port and not to the slaveport?
 """
         reactor.stop()
         return why
+
     def disconnected(self, ref):
         print "lost connection"
         # we can get here in one of two ways: the buildmaster has

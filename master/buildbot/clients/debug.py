@@ -74,6 +74,7 @@ class DebugWidget:
             d = f.login(creds)
             reactor.connectTCP(self.host, int(self.port), f)
             d.addCallbacks(self.connect_complete, self.connect_failed)
+
     def connect_complete(self, ref):
         self.connectbutton.set_label("Disconnect")
         self.connectlabel.set_text("Connected")
@@ -81,9 +82,11 @@ class DebugWidget:
         self.remote = ref
         self.remote.callRemote("print", "hello cleveland")
         self.remote.notifyOnDisconnect(self.disconnected)
+
     def connect_failed(self, why):
         self.connectlabel.set_text("Failed")
         print why
+
     def disconnected(self, ref):
         self.connectbutton.set_label("Connect")
         self.connectlabel.set_text("Disconnected")
@@ -95,9 +98,11 @@ class DebugWidget:
             return
         d = self.remote.callRemote("reload")
         d.addErrback(self.err)
+
     def do_rebuild(self, widget):
         print "Not yet implemented"
         return
+
     def do_poke_irc(self, widget):
         if not self.remote:
             return
@@ -179,6 +184,7 @@ class DebugWidget:
         name = self.buildname.get_text()
         d = self.remote.callRemote("setCurrentState", name, state)
         d.addErrback(self.err)
+
     def err(self, failure):
         print "received error:", failure
 
