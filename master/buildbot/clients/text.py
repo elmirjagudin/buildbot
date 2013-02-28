@@ -46,6 +46,7 @@ class TextClient:
         self.username = username
         self.passwd = passwd
         self.listener = base.StatusClient(events)
+        self.factory = pb.PBClientFactory()
 
     def run(self):
         """Start the TextClient."""
@@ -60,16 +61,24 @@ class TextClient:
             print "unparseable master location '%s'" % self.master
             print " expecting something more like localhost:8007"
             raise
-        cf = pb.PBClientFactory()
+
         creds = credentials.UsernamePassword(self.username, self.passwd)
-        d = cf.login(creds)
-        reactor.connectTCP(host, port, cf)
+        d = self.factory.login(creds)
+        reactor.connectTCP(host, port, self.factory)
         d.addCallbacks(self.connected, self.not_connected)
         return d
 
     def connected(self, ref):
         ref.notifyOnDisconnect(self.disconnected)
         self.listener.connected(ref)
+
+    def disconnect(self):
+        """
+        If connected to master, close connection.
+        """
+
+        self.factory.disconnect()
+
     def not_connected(self, why):
         if why.check(error.UnauthorizedLogin):
             print """
