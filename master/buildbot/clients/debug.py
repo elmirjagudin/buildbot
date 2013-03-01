@@ -35,6 +35,7 @@ class DebugWidget:
         self.host = host
         self.port = int(port)
         self.passwd = passwd
+        self.factory = pb.PBClientFactory()
         self.remote = None
         xml = self.xml = gtk.glade.XML(util.sibpath(__file__, "debug.glade"))
         g = xml.get_widget
@@ -42,7 +43,7 @@ class DebugWidget:
         self.filename = g('filename')
         self.connectbutton = g('connectbutton')
         self.connectlabel = g('connectlabel')
-        g('window1').connect('destroy', lambda win: gtk.main_quit())
+        g('window1').connect('destroy', lambda _: self.quit())
         # put the master info in the window's titlebar
         g('window1').set_title("Buildbot Debug Tool: %s" % master)
         c = xml.signal_connect
@@ -62,6 +63,10 @@ class DebugWidget:
         c('do_current_waiting', self.do_current, "waiting")
         c('do_current_building', self.do_current, "building")
 
+    def quit(self):
+        self.factory.disconnect()
+        reactor.stop()
+
     def do_connect(self, widget):
         if self.connected:
             self.connectlabel.set_text("Disconnecting...")
@@ -69,10 +74,9 @@ class DebugWidget:
                 self.remote.broker.transport.loseConnection()
         else:
             self.connectlabel.set_text("Connecting...")
-            f = pb.PBClientFactory()
             creds = credentials.UsernamePassword("debug", self.passwd)
-            d = f.login(creds)
-            reactor.connectTCP(self.host, int(self.port), f)
+            d = self.factory.login(creds)
+            reactor.connectTCP(self.host, int(self.port), self.factory)
             d.addCallbacks(self.connect_complete, self.connect_failed)
 
     def connect_complete(self, ref):
