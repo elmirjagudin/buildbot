@@ -883,10 +883,8 @@ class TestOptions(OptionsMixin, misc.StdoutAssertionsMixin, unittest.TestCase):
             lambda : self.parse())
 
     def test_version(self):
-        try:
-            self.parse('--version')
-        except SystemExit, e:
-            self.assertEqual(e.args[0], 0)
+        exception = self.assertRaises(SystemExit, self.parse, '--version')
+        self.assertEqual(exception.code, 0, "unexpected exit code")
         self.assertInStdout('Buildbot version:')
 
     def test_verbose(self):
@@ -918,21 +916,15 @@ class TestRun(unittest.TestCase):
 
     def test_run_good(self):
         self.patch(sys, 'argv', [ 'buildbot', 'my' ])
-        try:
-            runner.run()
-        except SystemExit, e:
-            self.assertEqual(e.args[0], 3)
-        else:
-            self.fail("didn't exit")
+
+        exception = self.assertRaises(SystemExit, runner.run)
+        self.assertEqual(exception.code, 3, "unexpected exit code")
 
     def test_run_bad(self):
         self.patch(sys, 'argv', [ 'buildbot', 'my', '-l' ])
         stdout = cStringIO.StringIO()
         self.patch(sys, 'stdout', stdout)
-        try:
-            runner.run()
-        except SystemExit, e:
-            self.assertEqual(e.args[0], 1)
-        else:
-            self.fail("didn't exit")
+
+        exception = self.assertRaises(SystemExit, runner.run)
+        self.assertEqual(exception.code, 1, "unexpected exit code")
         self.assertIn('THIS IS ME', stdout.getvalue())
