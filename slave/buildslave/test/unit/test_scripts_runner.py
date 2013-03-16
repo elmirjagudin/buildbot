@@ -150,6 +150,8 @@ class TestCreateSlaveOptions(OptionsMixin, unittest.TestCase):
                                 "incorrect number of arguments",
                                 self.parse, "extra_arg", *self.req_args)
 
+# used by TestRun.test_run_good to patch in a callback
+functionPlaceholder = None
 
 class TestRun(unittest.TestCase):
     """
@@ -161,8 +163,9 @@ class TestRun(unittest.TestCase):
         self.mocked_stdout = cStringIO.StringIO()
         self.patch(sys, "stdout", self.mocked_stdout)
 
-        # patch runner module to use test Options class
-        self.patch(runner, "Options", self.TestOptions)
+    class TestSubCommand(usage.Options):
+        subcommandFunction = __name__ + ".functionPlaceholder"
+        optFlags = [["test-opt", None, None]]
 
     class TestOptions(usage.Options):
         """
@@ -179,11 +182,37 @@ class TestRun(unittest.TestCase):
         def __str__(self):
             return "GeneralUsage"
 
+    def test_run_good(self):
+        """
+        Test successful invocation of buildslave command.
+        """
+
+        self.patch(sys, "argv", ["command", 'test', '--test-opt'])
+
+        # patch runner module to use our test subcommand class
+        self.patch(runner.Options, 'subCommands',
+            [['test', None, self.TestSubCommand, None ]])
+
+        # trace calls to subcommand function
+        subcommand_func = mock.Mock(return_value = 42)
+        self.patch(sys.modules[__name__],
+                   "functionPlaceholder",
+                   subcommand_func)
+
+        # check that subcommand function called with correct arguments
+        # and that it's return value is used as exit code
+        exception = self.assertRaises(SystemExit, runner.run)
+        subcommand_func.assert_called_once_with({'test-opt': 1})
+        self.assertEqual(exception.code, 42, "unexpected exit code")
+
     def test_run_bad_noargs(self):
         """
         Test handling of invalid command line arguments.
         """
         self.patch(sys, "argv", ["command"])
+
+        # patch runner module to use test Options class
+        self.patch(runner, "Options", self.TestOptions)
 
         exception = self.assertRaises(SystemExit, runner.run)
         self.assertEqual(exception.code, 1, "unexpected exit code")
@@ -198,6 +227,9 @@ class TestRun(unittest.TestCase):
         """
 
         self.patch(sys, "argv", ["command", "--suboptions"])
+
+        # patch runner module to use test Options class
+        self.patch(runner, "Options", self.TestOptions)
 
         exception = self.assertRaises(SystemExit, runner.run)
         self.assertEqual(exception.code, 1, "unexpected exit code")
