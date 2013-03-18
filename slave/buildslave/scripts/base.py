@@ -16,10 +16,24 @@
 import os
 
 def isBuildslaveDir(dir):
+    def print_error(error_message):
+        print "%s\ninvalid buildslave directory '%s'" % (error_message, dir)
+
     buildbot_tac = os.path.join(dir, "buildbot.tac")
-    if not os.path.isfile(buildbot_tac):
-        print "no buildbot.tac"
+    file = None
+    try:
+        file = open(buildbot_tac)
+        contents = file.read()
+    except IOError as exception:
+        print_error("error reading '%s': %s" % \
+                       (buildbot_tac, exception.strerror))
+        return False
+    finally:
+        if file != None:
+            file.close()
+
+    if "Application('buildslave')" not in contents:
+        print_error("unexpected content in '%s'" % buildbot_tac)
         return False
 
-    contents = open(buildbot_tac, "r").read()
-    return "Application('buildslave')" in contents
+    return True
