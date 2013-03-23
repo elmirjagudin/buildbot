@@ -15,7 +15,7 @@
 
 import mock
 from twisted.trial import unittest
-from twisted.python import usage
+from twisted.python import usage, log
 from buildslave.scripts import runner, base
 
 class TestUpgradeSlave(unittest.TestCase):
@@ -164,6 +164,11 @@ class TestOptions(unittest.TestCase):
         self.assertRaisesRegexp(usage.UsageError,
                                 "must specify a command",
                                 self.parse)
+
+    def test_verbose(self):
+        self.patch(log, 'startLogging', mock.Mock())
+        self.assertRaises(usage.UsageError, self.parse, "--verbose")
+        log.startLogging.assert_called_once_with(sys.stderr)
 
 
 # used by TestRun.test_run_good to patch in a callback
