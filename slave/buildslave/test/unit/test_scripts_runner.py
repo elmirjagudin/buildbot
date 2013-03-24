@@ -183,15 +183,13 @@ class TestOptions(misc.StdoutAssertionsMixin, unittest.TestCase):
 # used by TestRun.test_run_good to patch in a callback
 functionPlaceholder = None
 
-class TestRun(unittest.TestCase):
+class TestRun(misc.StdoutAssertionsMixin, unittest.TestCase):
     """
     Test buildslave.scripts.runner.run()
     """
 
     def setUp(self):
-        # capture output to stdout
-        self.mocked_stdout = cStringIO.StringIO()
-        self.patch(sys, "stdout", self.mocked_stdout)
+        self.setUpStdoutAssertions()
 
     class TestSubCommand(usage.Options):
         subcommandFunction = __name__ + ".functionPlaceholder"
@@ -246,10 +244,9 @@ class TestRun(unittest.TestCase):
 
         exception = self.assertRaises(SystemExit, runner.run)
         self.assertEqual(exception.code, 1, "unexpected exit code")
-
-        self.assertEqual(self.mocked_stdout.getvalue(),
-                         "command:  usage-error-message\n\nGeneralUsage\n",
-                         "unexpected error message on stdout")
+        self.assertStdoutEqual("command:  usage-error-message\n\n"
+                               "GeneralUsage\n",
+                               "unexpected error message on stdout")
 
     def test_run_bad_suboption(self):
         """
@@ -265,6 +262,6 @@ class TestRun(unittest.TestCase):
         self.assertEqual(exception.code, 1, "unexpected exit code")
 
         # check that we get error message for a sub-option
-        self.assertEqual(self.mocked_stdout.getvalue(),
-                         "command:  usage-error-message\n\nSubOptionUsage\n",
-                         "unexpected error message on stdout")
+        self.assertStdoutEqual("command:  usage-error-message\n\n"
+                               "SubOptionUsage\n",
+                               "unexpected error message on stdout")
