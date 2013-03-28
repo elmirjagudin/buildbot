@@ -104,6 +104,17 @@ class TestMakerBase(BaseDirTestsMixin, unittest.TestCase):
     options_class = runner.MakerBase
 
 
+class TestStopOptions(BaseDirTestsMixin, unittest.TestCase):
+    """
+    Test buildslave.scripts.runner.StopOptions class.
+    """
+    options_class = runner.StopOptions
+
+    def test_synopsis(self):
+        opts = runner.StopOptions()
+        self.assertIn('buildslave stop', opts.getSynopsis())
+
+
 class TestRestartOptions(OptionsMixin, BaseDirTestsMixin, unittest.TestCase):
     """
     Test buildslave.scripts.runner.RestartOptions class.
