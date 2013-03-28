@@ -56,22 +56,26 @@ class OptionsMixin(object):
                                (k, exp[k], opts[k]))
             self.fail("did not get expected options\n" + ("\n".join(msg)))
 
-
-class TestMakerBase(unittest.TestCase):
+class BaseDirTestsMixin:
     """
-    Test buildslave.scripts.runner.MakerBase class.
+    Common tests for Options classes with 'basedir' parameter
     """
 
     GETCWD_PATH = "test-dir"
     ABSPATH_PREFIX = "test-prefix-"
     MY_BASEDIR = "my-basedir"
 
+    # the options class to instantiate for test cases
+    options_class = None
+
     def setUp(self):
         self.patch(os, "getcwd", lambda : self.GETCWD_PATH)
         self.patch(os.path, "abspath", lambda path: self.ABSPATH_PREFIX + path)
 
     def parse(self, *args):
-        opts = runner.MakerBase()
+        assert self.options_class != None
+
+        opts = self.options_class()
         opts.parseOptions(args)
         return opts
 
@@ -91,6 +95,24 @@ class TestMakerBase(unittest.TestCase):
         self.assertRaisesRegexp(usage.UsageError,
                                 "I wasn't expecting so many arguments",
                                 self.parse, "arg1", "arg2")
+
+
+class TestMakerBase(BaseDirTestsMixin, unittest.TestCase):
+    """
+    Test buildslave.scripts.runner.MakerBase class.
+    """
+    options_class = runner.MakerBase
+
+
+class TestUpgradeSlaveOptions(BaseDirTestsMixin, unittest.TestCase):
+    """
+    Test buildslave.scripts.runner.UpgradeSlaveOptions class.
+    """
+    options_class = runner.UpgradeSlaveOptions
+
+    def test_synopsis(self):
+        opts = runner.UpgradeSlaveOptions()
+        self.assertIn('buildslave upgrade-slave', opts.getSynopsis())
 
 
 class TestCreateSlaveOptions(OptionsMixin, unittest.TestCase):
