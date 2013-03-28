@@ -115,6 +115,23 @@ class TestStopOptions(BaseDirTestsMixin, unittest.TestCase):
         self.assertIn('buildslave stop', opts.getSynopsis())
 
 
+class TestStartOptions(OptionsMixin, BaseDirTestsMixin, unittest.TestCase):
+    """
+    Test buildslave.scripts.runner.StartOptions class.
+    """
+    options_class = runner.StartOptions
+
+    def test_synopsis(self):
+        opts = runner.StartOptions()
+        self.assertIn('buildslave start', opts.getSynopsis())
+
+    def test_all_args(self):
+        opts = self.parse("--quiet", "--nodaemon", self.MY_BASEDIR)
+        self.assertOptions(opts,
+                           dict(quiet=True, nodaemon=True,
+                                basedir=self.ABSPATH_PREFIX + self.MY_BASEDIR))
+
+
 class TestRestartOptions(OptionsMixin, BaseDirTestsMixin, unittest.TestCase):
     """
     Test buildslave.scripts.runner.RestartOptions class.
