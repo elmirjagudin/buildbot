@@ -104,6 +104,23 @@ class TestMakerBase(BaseDirTestsMixin, unittest.TestCase):
     options_class = runner.MakerBase
 
 
+class TestRestartOptions(OptionsMixin, BaseDirTestsMixin, unittest.TestCase):
+    """
+    Test buildslave.scripts.runner.RestartOptions class.
+    """
+    options_class = runner.RestartOptions
+
+    def test_synopsis(self):
+        opts = runner.RestartOptions()
+        self.assertIn('buildslave restart', opts.getSynopsis())
+
+    def test_all_args(self):
+        opts = self.parse("--quiet", "--nodaemon", self.MY_BASEDIR)
+        self.assertOptions(opts,
+                           dict(quiet=True, nodaemon=True,
+                                basedir=self.ABSPATH_PREFIX + self.MY_BASEDIR))
+
+
 class TestUpgradeSlaveOptions(BaseDirTestsMixin, unittest.TestCase):
     """
     Test buildslave.scripts.runner.UpgradeSlaveOptions class.
