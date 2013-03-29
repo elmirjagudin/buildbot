@@ -42,7 +42,6 @@ class TestUpgradeSlave(unittest.TestCase):
         mocked_isBuildslaveDir.assert_called_once_with("dummy")
 
 
-
 class OptionsMixin(object):
     def assertOptions(self, opts, exp):
         got = dict([(k, opts[k]) for k in exp])
@@ -150,3 +149,60 @@ class TestCreateSlaveOptions(OptionsMixin, unittest.TestCase):
         self.assertRaisesRegexp(usage.UsageError,
                                 "incorrect number of arguments",
                                 self.parse, "extra_arg", *self.req_args)
+
+
+class TestRun(unittest.TestCase):
+    """
+    Test buildslave.scripts.runner.run()
+    """
+
+    def setUp(self):
+        # capture output to stdout
+        self.mocked_stdout = cStringIO.StringIO()
+        self.patch(sys, "stdout", self.mocked_stdout)
+
+        # patch runner module to use test Options class
+        self.patch(runner, "Options", self.TestOptions)
+
+    class TestOptions(usage.Options):
+        """
+        Option class that emulates usage error. The 'suboptions' flag
+        enables emulation of usage error in a sub-option.
+        """
+        optFlags = [["suboptions", None, None]]
+
+        def postOptions(self):
+            if self["suboptions"]:
+                self.subOptions = "SubOptionUsage"
+            raise usage.UsageError("usage-error-message")
+
+        def __str__(self):
+            return "GeneralUsage"
+
+    def test_run_bad_noargs(self):
+        """
+        Test handling of invalid command line arguments.
+        """
+        self.patch(sys, "argv", ["command"])
+
+        exception = self.assertRaises(SystemExit, runner.run)
+        self.assertEqual(exception.code, 1, "unexpected exit code")
+
+        self.assertEqual(self.mocked_stdout.getvalue(),
+                         "command:  usage-error-message\n\nGeneralUsage\n",
+                         "unexpected error message on stdout")
+
+    def test_run_bad_suboption(self):
+        """
+        Test handling of invalid command line arguments in a suboption.
+        """
+
+        self.patch(sys, "argv", ["command", "--suboptions"])
+
+        exception = self.assertRaises(SystemExit, runner.run)
+        self.assertEqual(exception.code, 1, "unexpected exit code")
+
+        # check that we get error message for a sub-option
+        self.assertEqual(self.mocked_stdout.getvalue(),
+                         "command:  usage-error-message\n\nSubOptionUsage\n",
+                         "unexpected error message on stdout")
