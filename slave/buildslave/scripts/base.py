@@ -13,19 +13,27 @@
 #
 # Copyright Buildbot Team Members
 
-from __future__ import with_statement
+import os
 
-from buildbot.scripts import base, stop, start
+def isBuildslaveDir(dir):
+    def print_error(error_message):
+        print "%s\ninvalid buildslave directory '%s'" % (error_message, dir)
 
-def restart(config):
-    basedir = config['basedir']
-    quiet = config['quiet']
+    buildbot_tac = os.path.join(dir, "buildbot.tac")
+    file = None
+    try:
+        file = open(buildbot_tac)
+        contents = file.read()
+    except IOError as exception:
+        print_error("error reading '%s': %s" % \
+                       (buildbot_tac, exception.strerror))
+        return False
+    finally:
+        if file != None:
+            file.close()
 
-    if not base.isBuildmasterDir(basedir):
-        return 1
+    if "Application('buildslave')" not in contents:
+        print_error("unexpected content in '%s'" % buildbot_tac)
+        return False
 
-    if stop.stop(config, wait=True) != 0:
-        return 1
-    if not quiet:
-        print "now restarting buildbot process.."
-    return start.start(config)
+    return True
