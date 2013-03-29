@@ -13,6 +13,8 @@
 #
 # Copyright Buildbot Team Members
 
+import os
+import sys
 import mock
 from twisted.trial import unittest
 from twisted.python import usage, log
@@ -53,6 +55,42 @@ class OptionsMixin(object):
                     msg.append(" %s: expected %r, got %r" %
                                (k, exp[k], opts[k]))
             self.fail("did not get expected options\n" + ("\n".join(msg)))
+
+
+class TestMakerBase(unittest.TestCase):
+    """
+    Test buildslave.scripts.runner.MakerBase class.
+    """
+
+    GETCWD_PATH = "test-dir"
+    ABSPATH_PREFIX = "test-prefix-"
+    MY_BASEDIR = "my-basedir"
+
+    def setUp(self):
+        self.patch(os, "getcwd", lambda : self.GETCWD_PATH)
+        self.patch(os.path, "abspath", lambda path: self.ABSPATH_PREFIX + path)
+
+    def parse(self, *args):
+        opts = runner.MakerBase()
+        opts.parseOptions(args)
+        return opts
+
+    def test_defaults(self):
+        opts = self.parse()
+        self.assertEqual(opts["basedir"],
+                         self.ABSPATH_PREFIX + self.GETCWD_PATH,
+                         "unexpected basedir path")
+
+    def test_basedir_arg(self):
+        opts = self.parse(self.MY_BASEDIR)
+        self.assertEqual(opts["basedir"],
+                         self.ABSPATH_PREFIX + self.MY_BASEDIR,
+                         "unexpected basedir path")
+
+    def test_too_many_args(self):
+        self.assertRaisesRegexp(usage.UsageError,
+                                "I wasn't expecting so many arguments",
+                                self.parse, "arg1", "arg2")
 
 
 class TestCreateSlaveOptions(OptionsMixin, unittest.TestCase):
