@@ -80,7 +80,7 @@ stop it, fix the config file, and restart.
 
 def start(config):
     if not base.isBuildslaveDir(config['basedir']):
-        sys.exit(1)
+        return 1
 
     os.chdir(config['basedir'])
     if config['quiet']:
@@ -96,7 +96,7 @@ def start(config):
     if os.fork():
         # this is the parent
         rc = Follower().follow()
-        sys.exit(rc)
+        return rc
     # this is the child: give the logfile-watching parent a chance to start
     # watching it before we start the daemon
     time.sleep(0.2)

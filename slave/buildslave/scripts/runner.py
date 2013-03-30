@@ -221,7 +221,7 @@ def restart(config):
     quiet = config['quiet']
 
     if not base.isBuildslaveDir(config['basedir']):
-        sys.exit(1)
+        return 1
 
     from buildslave.scripts.startup import start
     if not stop(config, returnFalseOnNotRunning=True):
@@ -229,7 +229,7 @@ def restart(config):
             print "no old buildslave process found to stop"
     if not quiet:
         print "now restarting buildslave process.."
-    start(config)
+    return start(config)
 
 
 class MakerBase(usage.Options):
@@ -299,7 +299,7 @@ def upgradeSlave(config):
     basedir = os.path.expanduser(config['basedir'])
 
     if not base.isBuildslaveDir(basedir):
-        sys.exit(1)
+        return 1
 
     buildbot_tac = open(os.path.join(basedir, "buildbot.tac")).read()
     new_buildbot_tac = buildbot_tac.replace(

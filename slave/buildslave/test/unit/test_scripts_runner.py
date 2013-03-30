@@ -34,12 +34,10 @@ class TestUpgradeSlave(unittest.TestCase):
         mocked_isBuildslaveDir = mock.Mock(return_value=False)
         self.patch(base, "isBuildslaveDir", mocked_isBuildslaveDir)
 
-        # call upgradeSlave() and check that SystemExit exception is raised
+        # call upgradeSlave() and check that exit code 1 is returned
         config = {"basedir" : "dummy"}
-        exception = self.assertRaises(SystemExit, runner.upgradeSlave, config)
-
-        # check exit code
-        self.assertEqual(exception.code, 1, "unexpected exit code")
+        self.assertEqual(runner.upgradeSlave(config), 1,
+                         "unexpected exit code")
 
         # check that isBuildslaveDir was called with correct argument
         mocked_isBuildslaveDir.assert_called_once_with("dummy")
