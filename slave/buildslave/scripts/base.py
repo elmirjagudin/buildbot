@@ -14,20 +14,25 @@
 # Copyright Buildbot Team Members
 
 import os
+from twisted.application import service
 
 def isBuildslaveDir(dir):
     def print_error(error_message):
         print "%s\ninvalid buildslave directory '%s'" % (error_message, dir)
 
     buildbot_tac = os.path.join(dir, "buildbot.tac")
+
     try:
-        contents = open(buildbot_tac).read()
+        app = service.loadApplication(buildbot_tac, "python")
+    except (KeyError, SyntaxError):
+        print_error("unexpected content in '%s'" % buildbot_tac)
+        return False
     except IOError, exception:
         print_error("error reading '%s': %s" % \
                        (buildbot_tac, exception.strerror))
         return False
 
-    if "Application('buildslave')" not in contents:
+    if app.getComponent(service.IService).name != "buildslave":
         print_error("unexpected content in '%s'" % buildbot_tac)
         return False
 
