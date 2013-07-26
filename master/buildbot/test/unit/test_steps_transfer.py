@@ -183,6 +183,18 @@ class TestDirectoryUpload(steps.BuildStepMixin, unittest.TestCase):
         return d
 
 class TestStringDownload(unittest.TestCase):
+
+    def testModeConfError(self):
+        """
+        check that ConfigErrors is raised on invalid 'mode' argument
+        """
+        self.assertRaisesRegexp(
+            config.ConfigErrors,
+            "StringDownload step's mode must be an integer or None,"
+            " got 'not-a-number'",
+            transfer.StringDownload,
+            "string", "file", mode="not-a-number")
+
     def testBasic(self):
         s = transfer.StringDownload("Hello World", "hello.txt")
         s.build = Mock()
