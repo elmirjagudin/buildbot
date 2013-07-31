@@ -22,13 +22,52 @@ from twisted.trial import unittest
 
 from mock import Mock
 
+from buildbot.process import buildstep
 from buildbot.process.properties import Properties
 from buildbot.util import json
 from buildbot.steps import transfer
 from buildbot.status.results import SUCCESS
 from buildbot import config
+from buildbot import interfaces
 from buildbot.test.util import steps
 from buildbot.test.fake.remotecommand import Expect, ExpectRemoteRef
+
+
+class TestTransferBuildStep(unittest.TestCase):
+    """
+    Test buildbot.steps.transfer._TransferBuildStep class.
+    """
+    def testCheckSlaveVersionGood(self):
+        """
+        Test calling checkSlaveVersion() when buildslave have support for
+        requested remote command.
+        """
+        # patch BuildStep.slaveVersion() to return success
+        mockedSlaveVersion = Mock()
+        self.patch(buildstep.BuildStep, "slaveVersion", mockedSlaveVersion)
+
+        # check that no exceptions are raised
+        transfer._TransferBuildStep().checkSlaveVersion("foo")
+
+        # make sure slaveVersion() was called with correct arguments
+        mockedSlaveVersion.assert_called_once_with("foo")
+
+    def testCheckSlaveVersionTooOld(self):
+        """
+        Test calling checkSlaveVersion() when buildslave is to old to support
+        requested remote command.
+        """
+        # patch BuildStep.slaveVersion() to return error
+        self.patch(buildstep.BuildStep,
+                   "slaveVersion",
+                   Mock(return_value=None))
+
+        # make sure appropriate exception is raised
+        step = transfer._TransferBuildStep()
+        self.assertRaisesRegexp(interfaces.BuildSlaveTooOldError,
+                                "slave is too old, does not know about foo",
+                                step.checkSlaveVersion, "foo")
+
 
 class TestFileUpload(unittest.TestCase):
     def setUp(self):
