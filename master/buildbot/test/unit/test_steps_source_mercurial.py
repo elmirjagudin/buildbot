@@ -235,12 +235,12 @@ class TestMercurial(sourcesteps.SourceStepMixin, unittest.TestCase):
                         command=['hg', '--verbose', 'update',
                                  '--clean', '--rev', 'default'])
             + 0,
-            Expect('downloadFile', dict(blocksize=16384, maxsize=None, 
+            Expect('downloadFile', dict(blocksize=16384, maxsize=None,
                                         reader=ExpectRemoteRef(_FileReader),
                                         slavedest='.buildbot-diff', workdir='wkdir',
                                         mode=None))
             + 0,
-            Expect('downloadFile', dict(blocksize=16384, maxsize=None, 
+            Expect('downloadFile', dict(blocksize=16384, maxsize=None,
                                         reader=ExpectRemoteRef(_FileReader),
                                         slavedest='.buildbot-patched', workdir='wkdir',
                                         mode=None))
@@ -262,7 +262,7 @@ class TestMercurial(sourcesteps.SourceStepMixin, unittest.TestCase):
         )
         self.expectOutcome(result=SUCCESS, status_text=["update"])
         return self.runStep()
-    
+
     def test_mode_full_clean_patch_fail(self):
         self.setupStep(
                 mercurial.Mercurial(repourl='http://hg.mozilla.org',
@@ -302,12 +302,12 @@ class TestMercurial(sourcesteps.SourceStepMixin, unittest.TestCase):
                         command=['hg', '--verbose', 'update',
                                  '--clean', '--rev', 'default'])
             + 0,
-            Expect('downloadFile', dict(blocksize=16384, maxsize=None, 
+            Expect('downloadFile', dict(blocksize=16384, maxsize=None,
                                         reader=ExpectRemoteRef(_FileReader),
                                         slavedest='.buildbot-diff', workdir='wkdir',
                                         mode=None))
             + 0,
-            Expect('downloadFile', dict(blocksize=16384, maxsize=None, 
+            Expect('downloadFile', dict(blocksize=16384, maxsize=None,
                                         reader=ExpectRemoteRef(_FileReader),
                                         slavedest='.buildbot-patched', workdir='wkdir',
                                         mode=None))
@@ -543,7 +543,7 @@ class TestMercurial(sourcesteps.SourceStepMixin, unittest.TestCase):
                         command=['hg', '--verbose', 'parents',
                                     '--template', '{node}\\n'])
             + ExpectShell.log('stdio', stdout='\n')
-            + ExpectShell.log('stdio', 
+            + ExpectShell.log('stdio',
                 stdout='f6ad368298bd941e934a41f3babc827b2aa95a1d')
             + 0,
             )
@@ -586,7 +586,7 @@ class TestMercurial(sourcesteps.SourceStepMixin, unittest.TestCase):
                         command=['hg', '--verbose', 'parents',
                                     '--template', '{node}\\n'])
             + ExpectShell.log('stdio', stdout='\n')
-            + ExpectShell.log('stdio', 
+            + ExpectShell.log('stdio',
                 stdout='f6ad368298bd941e934a41f3babc827b2aa95a1d')
             + 0,
             )
@@ -628,7 +628,7 @@ class TestMercurial(sourcesteps.SourceStepMixin, unittest.TestCase):
                         command=['hg', '--verbose', 'parents',
                                     '--template', '{node}\\n'])
             + ExpectShell.log('stdio', stdout='\n')
-            + ExpectShell.log('stdio', 
+            + ExpectShell.log('stdio',
                 stdout='f6ad368298bd941e934a41f3babc827b2aa95a1d')
             + 0,
             )
@@ -758,7 +758,7 @@ class TestMercurial(sourcesteps.SourceStepMixin, unittest.TestCase):
             )
         self.expectOutcome(result=SUCCESS, status_text=["update"])
         return self.runStep()
-    
+
     def test_mode_incremental_existing_repo_added_files_old_rmdir(self):
         self.setupStep(
                 mercurial.Mercurial(repourl='http://hg.mozilla.org',

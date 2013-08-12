@@ -233,7 +233,7 @@ class Source(LoggingBuildStep, CompositeStepMixin):
                 if cmd.didFail():
                     raise buildstep.BuildStepFailed()
                 return cmd.rc
-                
+
             d.addCallback(evaluateCommand)
             return d
 
@@ -254,7 +254,7 @@ class Source(LoggingBuildStep, CompositeStepMixin):
     def sourcedirIsPatched(self):
         d = self.pathExists(self.build.path_module.join(self.workdir, '.buildbot-patched'))
         return d
-        
+
     def start(self):
         if self.notReally:
             log.msg("faking %s checkout/update" % self.name)

@@ -148,7 +148,7 @@ class RemoteCommand(pb.Referenceable):
 
         # tell the remote command to halt. Returns a Deferred that will fire
         # when the interrupt command has been delivered.
-        
+
         d = defer.maybeDeferred(self.remote.callRemote, "interruptCommand",
                                 self.commandID, str(why))
         # the slave may not have remote_interruptCommand
@@ -789,7 +789,7 @@ class BuildStep(object, properties.PropertiesMixin):
         c.buildslave = self.buildslave
         d = c.run(self, self.remote)
         return d
-    
+
     @staticmethod
     def _maybeEvaluate(value, *args, **kwargs):
         if callable(value):

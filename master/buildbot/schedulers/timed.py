@@ -41,7 +41,7 @@ class Timed(base.BaseScheduler):
     """
 
     def __init__(self, name, builderNames, properties={}, **kwargs):
-        base.BaseScheduler.__init__(self, name, builderNames, properties, 
+        base.BaseScheduler.__init__(self, name, builderNames, properties,
                                     **kwargs)
 
         # tracking for when to start the next build
@@ -306,12 +306,12 @@ class Nightly(NightlyBase):
         # both important and unimportant changes on our branch are recorded, as
         # we will include all such changes in any buildsets we start.  Note
         # that we must check the branch here because it is not included in the
-        # change filter. 
+        # change filter.
         if change.branch != self.branch:
             return defer.succeed(None) # don't care about this change
         return self.master.db.schedulers.classifyChanges(
                 self.objectid, { change.number : important })
-    
+
     @defer.inlineCallbacks
     def startBuild(self):
         scheds = self.master.db.schedulers

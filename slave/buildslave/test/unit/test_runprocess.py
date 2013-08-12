@@ -231,7 +231,7 @@ class TestRunProcess(BasedirMixin, unittest.TestCase):
             self.failUnless({'stdout': nl('escaped|pipe\n')} in b.updates, b.show())
             self.failUnless({'rc': 0} in b.updates, b.show())
         d.addCallback(check)
-        return d        
+        return d
 
     @compat.skipUnlessPlatformIs("win32")
     def testPipeAlone(self):
@@ -248,7 +248,7 @@ class TestRunProcess(BasedirMixin, unittest.TestCase):
             self.failUnless({'rc': 0} in b.updates, b.show())
         d.addCallback(check)
         return d
-    
+
     @compat.skipUnlessPlatformIs("win32")
     def testPipeString(self):
         b = FakeSlaveBuilder(False, self.basedir)
@@ -262,7 +262,7 @@ class TestRunProcess(BasedirMixin, unittest.TestCase):
             self.failUnless({'rc': 0} in b.updates, b.show())
         d.addCallback(check)
         return d
-    
+
     def testCommandTimeout(self):
         b = FakeSlaveBuilder(False, self.basedir)
         s = runprocess.RunProcess(b, sleepCommand(10), self.basedir, timeout=5)
