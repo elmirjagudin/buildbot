@@ -1014,10 +1014,6 @@ class TestProperties(unittest.TestCase):
         self.assertEqual(self.props.properties['x'], ('y', 'test'))
         self.assertIn('x', self.props.runtime)
 
-    def test_setProperty_no_source(self):
-        self.assertRaises(TypeError, lambda :
-                self.props.setProperty('x', 'y'))
-
     def test_getProperties(self):
         self.assertIdentical(self.props.getProperties(), self.props)
 
