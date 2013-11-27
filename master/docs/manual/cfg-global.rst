@@ -637,3 +637,33 @@ If changes come from different repositories, extra processing will be needed to 
 This codebase will then be a logical name for the combination of repository and or branch etc.
 
 The `codebaseGenerator` accepts a change dictionary as produced by the :py:class:`buildbot.db.changes.ChangesConnectorComponent <changes connector component>`, with a changeid equal to `None`.
+
+.. bb:cfg:: siteLocal
+
+Site Local Settings
+~~~~~~~~~~~~~~~~~~~
+
+Buildbot provides a hook to store any site local settings via the ``siteLocal`` parameter.
+
+::
+
+    c['siteLocal'] = {
+        'mySetting1': 'setting 1 value',
+        'mySetting2': 'setting 2 value'
+    }
+
+The ``siteLocal`` parameter can be set to any python object.
+The value assigned will be accessable as `siteLocal` parameter of the :py:class:`buildbot.config.MasterConfig` object while buildbot master is running.
+
+This can be used to configure site local components in your buildbot configuration.
+For example a custom component can be configured via the ``siteLocal`` parameter.
+If your master.cfg contains the ``siteLocal`` definitions above, you can use following code to load it's settings:
+
+::
+
+    # load 'mySetting1' value
+    setting1 = master.config.siteLocal['mySetting1']
+    # load 'mySetting2' value
+    setting2 = master.config.siteLocal['mySetting2']
+
+In the above code `master` variable is a refernce to :py:class:`buildbot.master.BuildMaster` object.

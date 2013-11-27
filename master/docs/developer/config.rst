@@ -105,6 +105,10 @@ described in :ref:`developer-Reconfiguration`.
         The per-protocol port specification for slave connections.
         Based on :bb:cfg:`protocols`.
 
+    .. py:attribute:: siteLocal
+
+        Site local settings, from :bb:cfg:`siteLocal`.
+
     .. py:attribute:: multiMaster
 
         If true, then this master is part of a cluster; based on

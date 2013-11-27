@@ -82,6 +82,7 @@ class MasterConfig(object):
         self.debugPassword = None
         self.manhole = None
         self.protocols = {}
+        self.siteLocal = None
 
         self.validation = dict(
             branch=re.compile(r'^[\w.+/~-]*$'),
@@ -114,7 +115,8 @@ class MasterConfig(object):
         "logMaxSize", "logMaxTailSize", "manhole", "mergeRequests", "metrics",
         "multiMaster", "prioritizeBuilders", "projectName", "projectURL",
         "properties", "protocols", "revlink", "schedulers", "slavePortnum",
-        "slaves", "status", "title", "titleURL", "user_managers", "validation"
+        "slaves", "status", "title", "titleURL", "user_managers", "validation",
+        "siteLocal"
     ])
 
     @classmethod
@@ -334,6 +336,9 @@ class MasterConfig(object):
                 error("revlink must be a callable")
             else:
                 self.revlink = revlink
+
+        if 'siteLocal' in config_dict:
+            self.siteLocal = config_dict['siteLocal']
 
     def load_validation(self, filename, config_dict):
         validation = config_dict.get("validation", {})
