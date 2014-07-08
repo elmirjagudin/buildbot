@@ -58,7 +58,7 @@ class TestGPOMixin(unittest.TestCase):
                            result.failures[0][1].getErrorMessage())
             if result.errors:
                 output += ('\nerrors: %s' %
-                           map(lambda x: x[1].value, result.errors))
+                           [x[1].value for x in result.errors])
             raise self.failureException(output)
 
         self.failUnless(result.wasSuccessful())

@@ -137,7 +137,7 @@ class GitOutputParsing(gpo.GetProcessOutputMixin, unittest.TestCase):
             self.poller._get_commit_files,
             ['log', '--name-only', '--no-walk', '--format=%n', self.dummyRevStr, '--'],
             filesStr,
-            filter(lambda x: x.strip(), filesStr.splitlines(), ),
+            [x.strip() for x in filesStr.splitlines()],
             emptyRaisesException=False,
         )
 

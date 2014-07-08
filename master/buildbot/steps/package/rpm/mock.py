@@ -94,9 +94,11 @@ class Mock(ShellCommand):
                 self.logfiles[lname] = lname
         self.addLogObserver('state.log', MockStateObserver())
 
-        cmd = remotecommand.RemoteCommand('rmdir', {'dir':
-                                                    map(lambda l: self.build.path_module.join('build', self.logfiles[l]),
-                                                        self.mock_logfiles)})
+        cmd = remotecommand.RemoteCommand(
+            'rmdir',
+            {'dir': [self.build.path_module.join('build', self.logfiles[l])
+                     for l in self.mock_logfiles]})
+
         d = self.runCommand(cmd)
 
         def removeDone(cmd):
