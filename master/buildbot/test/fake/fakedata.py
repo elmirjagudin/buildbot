@@ -78,7 +78,11 @@ class FakeUpdates(object):
         # double-check args, types, etc.
         if files is not None:
             self.testcase.assertIsInstance(files, list)
-            map(lambda f: self.testcase.assertIsInstance(f, unicode), files)
+            for f in files:
+                self.testcase.assertIsInstance(f, unicode)
+            # make sure this variable is not added to self.changesAdded below
+            if "f" in locals():
+                del f
         self.testcase.assertIsInstance(comments, (types.NoneType, unicode))
         self.testcase.assertIsInstance(author, (types.NoneType, unicode))
         self.testcase.assertIsInstance(revision, (types.NoneType, unicode))
