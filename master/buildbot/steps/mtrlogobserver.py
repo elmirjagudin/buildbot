@@ -471,7 +471,7 @@ VALUES (%s, %s, %s, %s, %s)
             warn_id = self.step.getProperty("mtr_warn_id")
             self.step.setProperty("mtr_warn_id", warn_id + 1)
             q = ("INSERT INTO test_warnings(test_run_id, list_id, list_idx, test_name) " +
-                 "VALUES " + ", ".join(map(lambda x: "(%s, %s, %s, %s)", testList)))
+                 "VALUES " + ", ".join(map(lambda x: "(%s, %s, %s, %s)", testList)))  # pylint: disable=deprecated-lambda
             v = []
             idx = 0
             for t in testList:
