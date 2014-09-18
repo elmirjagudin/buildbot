@@ -505,6 +505,7 @@ class AllBuildsJsonResource(JsonResource):
         #Get codebases
         codebases = {}
         getCodebasesArg(request=request, codebases=codebases)
+        results_filter = getResultsArg(request)
 
         # If max > buildCacheSize, it'll trash the cache...
         cache_size = self.builder_status.master.config.caches['Builds']
@@ -514,8 +515,15 @@ class AllBuildsJsonResource(JsonResource):
             if not isinstance(child, BuildJsonResource):
                 continue
 
-            if len(codebases) == 0 or child.build_status.builder.foundCodebasesInBuild(child.build_status, codebases):
-                results[child.build_status.getNumber()] = child.asDict(request)
+            if len(codebases) != 0 and \
+                    not child.build_status.builder.foundCodebasesInBuild(child.build_status, codebases):
+                continue
+
+            if results_filter is not None and \
+                child.build_status.results not in results_filter:
+                continue
+
+            results[child.build_status.getNumber()] = child.asDict(request)
 
         return results
 
