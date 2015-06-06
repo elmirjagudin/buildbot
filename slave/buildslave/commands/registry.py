@@ -30,6 +30,12 @@ commandRegistry = {
     "listdir": "buildslave.commands.fs.ListDir",
 }
 
+# The command that have been supported by earlier versions of buildslave,
+# but have been removed. Used for sending errors to older build masters.
+removedCommands = [
+    "svn", "bk", "cvs", "darcs", "git", "bzr", "hg", "p4", "mtn"
+]
+
 
 def getFactory(command):
     factory_name = commandRegistry[command]
@@ -37,5 +43,9 @@ def getFactory(command):
     return factory
 
 
+def removedCommand(command):
+    return command in removedCommands
+
+
 def getAllCommandNames():
-    return commandRegistry.keys()
+    return commandRegistry.keys() + removedCommands

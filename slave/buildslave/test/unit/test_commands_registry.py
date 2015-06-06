@@ -32,6 +32,5 @@ class Registry(unittest.TestCase):
         self.failUnless('shell' in registry.getAllCommandNames())
 
     def test_all_commands_exist(self):
-        # if this doesn't raise a KeyError, then we're good
         for n in registry.getAllCommandNames():
-            registry.getFactory(n)
+            registry.removedCommand(n) or registry.getFactory(n)

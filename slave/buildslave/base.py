@@ -30,6 +30,10 @@ from buildslave.commands import base
 from buildslave.commands import registry
 
 
+class RemovedCommand(pb.Error):
+    pass
+
+
 class UnknownCommand(pb.Error):
     pass
 
@@ -136,7 +140,13 @@ class SlaveBuilderBase(service.Service):
         try:
             factory = registry.getFactory(command)
         except KeyError:
-            raise UnknownCommand("unrecognized SlaveCommand '%s'" % command)
+            if registry.removedCommand(command):
+                raise RemovedCommand("SlaveCommand '%s' is no longer supported"
+                                     " by this version of buildslave" %
+                                     command)
+            else:
+                raise UnknownCommand("unrecognized SlaveCommand '%s'" %
+                                     command)
         self.command = factory(self, stepId, args)
 
         log.msg(" startCommand:%s [id %s]" % (command, stepId))
